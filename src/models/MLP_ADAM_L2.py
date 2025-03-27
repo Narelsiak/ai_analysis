@@ -1,6 +1,6 @@
 import numpy as np
 
-def train(X_train, y_train, X_test, y_test):
+def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
     def relu(x):
         return np.maximum(0, x)
 
@@ -28,10 +28,8 @@ def train(X_train, y_train, X_test, y_test):
     W3 = np.random.randn(hidden_size_2, output_size) * 0.1
     b3 = np.zeros((1, output_size))
 
-    learning_rate = 0.01
     beta1, beta2, epsilon = 0.9, 0.999, 1e-8
     lambda_reg = 0.01
-    epochs = 230
 
     mW1, vW1, mb1, vb1 = 0, 0, 0, 0
     mW2, vW2, mb2, vb2 = 0, 0, 0, 0
@@ -40,6 +38,9 @@ def train(X_train, y_train, X_test, y_test):
     def compute_loss(y_pred, y_true):
         m = y_true.shape[0]
         return -np.sum(y_true * np.log(y_pred + 1e-8)) / m
+
+    #List to store lodd and acc per epoch
+    loss_history, accuracy_history = [], []
 
     for epoch in range(epochs):
         Z1 = np.dot(X_train, W1) + b1
@@ -50,6 +51,12 @@ def train(X_train, y_train, X_test, y_test):
         A3 = softmax(Z3)
 
         loss = compute_loss(A3, y_train)
+        predictions_train = np.argmax(A3, axis=1)
+        y_train_classes = np.argmax(y_train, axis=1)
+        accuracy_train = np.mean(predictions_train == y_train_classes)
+
+        loss_history.append(loss)
+        accuracy_history.append(accuracy_train)
 
         dZ3 = softmax_derivative(A3, y_train)
         dW3 = np.dot(A2.T, dZ3) + lambda_reg * W3
@@ -84,4 +91,7 @@ def train(X_train, y_train, X_test, y_test):
     predictions = np.argmax(A3_test, axis=1)
     y_test_classes = np.argmax(y_test, axis=1)
     accuracy = np.mean(predictions == y_test_classes)
+    
     print(f"Test Accuracy: {accuracy:.4f}")
+
+    return loss_history, accuracy_history, predictions, y_test_classes

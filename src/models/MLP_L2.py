@@ -1,6 +1,6 @@
 import numpy as np
 
-def train(X_train, y_train, X_test, y_test):
+def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
     def relu(x):
         return np.maximum(0, x)
 
@@ -29,14 +29,14 @@ def train(X_train, y_train, X_test, y_test):
     W3 = np.random.randn(hidden_size_2, output_size) * 0.1
     b3 = np.zeros((1, output_size))
 
-    learning_rate = 0.01
     lambda_reg = 0.01  # L2 regularization strength
-    epochs = 230
 
     def compute_loss(y_pred, y_true):
         m = y_true.shape[0]
         # Cross-entropy loss with a small epsilon for numerical stability
         return -np.sum(y_true * np.log(y_pred + 1e-8)) / m
+
+    loss_history, accuracy_history = [], []
 
     for epoch in range(epochs):
         Z1 = np.dot(X_train, W1) + b1
@@ -49,6 +49,13 @@ def train(X_train, y_train, X_test, y_test):
         # Compute the loss, including L2 regularization term
         # L2 regularization penalizes large weights to prevent overfitting
         loss = compute_loss(A3, y_train) + lambda_reg * (np.sum(W1**2) + np.sum(W2**2) + np.sum(W3**2))
+
+        predictions_train = np.argmax(A3, axis=1)
+        y_train_classes = np.argmax(y_train, axis=1)
+        accuracy_train = np.mean(predictions_train == y_train_classes)
+
+        loss_history.append(loss)
+        accuracy_history.append(accuracy_train)
 
         dZ3 = softmax_derivative(A3, y_train)
         dW3 = np.dot(A2.T, dZ3) + lambda_reg * W3  # Add the regularization term to the gradient
@@ -81,3 +88,5 @@ def train(X_train, y_train, X_test, y_test):
     y_test_classes = np.argmax(y_test, axis=1)
     accuracy = np.mean(predictions == y_test_classes)
     print(f"Test Accuracy: {accuracy:.4f}")
+
+    return loss_history, accuracy_history, y_test_classes, predictions

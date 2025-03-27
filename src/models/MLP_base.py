@@ -1,6 +1,6 @@
 import numpy as np
 
-def train(X_train, y_train, X_test, y_test):
+def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
     def relu(x):
         """ReLU activation function: returns max(0, x)"""
         return np.maximum(0, x)
@@ -36,14 +36,13 @@ def train(X_train, y_train, X_test, y_test):
     W3 = np.random.randn(hidden_size_2, output_size) * 0.1
     b3 = np.zeros((1, output_size))
 
-    # Training parameters
-    learning_rate = 0.001
-    epochs = 230
-
     def compute_loss(y_pred, y_true):
         """Computes categorical cross-entropy loss"""
         m = y_true.shape[0]  # Number of samples
         return -np.sum(y_true * np.log(y_pred + 1e-8)) / m  # Avoid log(0)
+
+    #List to store lodd and acc per epoch
+    loss_history, accuracy_history = [], []
 
     # Training loop
     for epoch in range(epochs):
@@ -54,9 +53,6 @@ def train(X_train, y_train, X_test, y_test):
         A2 = relu(Z2)
         Z3 = np.dot(A2, W3) + b3
         A3 = softmax(Z3)
-
-        # Compute loss
-        loss = compute_loss(A3, y_train)
 
         """Backward pass (Gradient computation)"""
         dZ3 = softmax_derivative(A3, y_train)
@@ -79,6 +75,15 @@ def train(X_train, y_train, X_test, y_test):
         W3 -= learning_rate * dW3
         b3 -= learning_rate * db3
 
+        # Compute loss
+        loss = compute_loss(A3, y_train)
+        predictions_train = np.argmax(A3, axis=1)
+        y_train_classes = np.argmax(y_train, axis=1)
+        accuracy_train = np.mean(predictions_train == y_train_classes)
+
+        loss_history.append(loss)
+        accuracy_history.append(accuracy_train)
+
     # Evaluate on test set
     Z1_test = np.dot(X_test, W1) + b1
     A1_test = relu(Z1_test)
@@ -92,3 +97,5 @@ def train(X_train, y_train, X_test, y_test):
     y_test_classes = np.argmax(y_test, axis=1)
     accuracy = np.mean(predictions == y_test_classes)
     print(f"Test Accuracy: {accuracy:.4f}")
+
+    return loss_history, accuracy_history, y_test_classes, predictions
