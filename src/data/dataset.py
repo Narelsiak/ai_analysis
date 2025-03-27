@@ -47,4 +47,7 @@ def load_and_preprocess_data(file_path, test_size=0.2):
     return split_dataset(X, y, test_size)
 
 file_path = os.path.join('data', 'raw', 'Iris.csv')
-X_train, X_test, y_train, y_test = load_and_preprocess_data(file_path)
+X, y = load_data(file_path)
+X_normalize = data_normalization(X)
+
+X_train, X_test, y_train, y_test = split_dataset(X_normalize, y, test_size=0.2)
