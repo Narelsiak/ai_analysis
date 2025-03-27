@@ -40,8 +40,11 @@ def data_normalization(X):
     """Normalizes the dataset using Min-Max scaling."""
     return (X - X.min()) / (X.max() - X.min())
 
-file_path = os.path.join('ai_analysis', 'data', 'raw', 'Iris.csv')
+def load_and_preprocess_data(file_path, test_size=0.2):
+    """Loads and preprocesses data, returning train and test sets."""
+    X, y = load_data(file_path)
+    X = data_normalization(X)
+    return split_dataset(X, y, test_size)
 
-X, y = load_data(file_path)
-X = data_normalization(X)
-X_train, X_test, y_train, y_test = split_dataset(X, y)
+file_path = os.path.join('data', 'raw', 'Iris.csv')
+X_train, X_test, y_train, y_test = load_and_preprocess_data(file_path)
