@@ -4,10 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-save_dir = "/reports/figures/exploreDataset"
-os.makedirs(save_dir, exist_ok=True)
+def analyze_data(X, y, save_dir="reports/figures/exploreDataset"):    
+    os.makedirs(save_dir, exist_ok=True)
 
-def analyze_data(X, y):
     """Performs basic data analysis and visualization."""
     # Basic statistics for X
     print("Descriptive statistics for features (X):")

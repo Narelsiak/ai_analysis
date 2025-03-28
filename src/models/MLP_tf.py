@@ -16,8 +16,6 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
     loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
     
     predictions = np.argmax(model.predict(X_test), axis=1)
-    y_test_classes = np.argmax(y_test, axis=1)
+    y_test_classes = np.argmax(y_test, axis=1)    
     
-    print(f'Final Test Accuracy: {accuracy:.4f}')
-    
-    return history.history['loss'], history.history['accuracy'], predictions, y_test_classes
+    return history.history['loss'], history.history['accuracy'], predictions, y_test_classes, accuracy

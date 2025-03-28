@@ -96,6 +96,5 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
     predictions = np.argmax(A3_test, axis=1)
     y_test_classes = np.argmax(y_test, axis=1)
     accuracy = np.mean(predictions == y_test_classes)
-    print(f"Test Accuracy: {accuracy:.4f}")
 
-    return loss_history, accuracy_history, y_test_classes, predictions
+    return loss_history, accuracy_history, y_test_classes, predictions, accuracy
