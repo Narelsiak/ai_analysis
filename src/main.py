@@ -10,6 +10,8 @@ from src.models.MLP_ADAM_L2 import train as train_MLP_ADAM_L2
 from src.models.MLP_tf import train as train_MLP_tf
 from src.models.MLP_ADAM_batch import train as train_MLP_ADAM_batch
 from src.models.MLP_ADAM_batch_HE_init import train as train_MLP_ADAM_batch_HE_init
+from src.models.MLP_ADAM_batch_HE_lrScheduler import train as train_MLP_ADAM_batch_HE_lrScheduler
+
 
 from src.visualization.explore_data import analyze_data
 from src.visualization.analyze_training_results import analyze_training_results
@@ -25,6 +27,7 @@ def main():
         "MLP Adam + L2": train_MLP_ADAM_L2,
         "MLP Adam Batch": train_MLP_ADAM_batch,
         "MLP Adam Batch HE Init": train_MLP_ADAM_batch_HE_init,
+        "MLP Adam Batch HE Init + LR Scheduler": train_MLP_ADAM_batch_HE_lrScheduler,
         "MLP Tensorflow": train_MLP_tf
     }
 
