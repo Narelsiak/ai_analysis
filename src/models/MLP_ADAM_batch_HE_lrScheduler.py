@@ -1,6 +1,6 @@
 import numpy as np
 
-def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batch_size=32, lr_scheduler=True, step_size=10, gamma=0.99):
+def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batch_size=32, lr_scheduler=True, step_size=10, gamma=0.98):
     def relu(x):
         return np.maximum(0, x)
 
@@ -50,6 +50,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
         np.random.shuffle(indices)
         X_train, y_train = X_train[indices], y_train[indices]
 
+        epoch_loss = 0
         for i in range(0, X_train.shape[0], batch_size):
             X_batch = X_train[i:i+batch_size]
             y_batch = y_train[i:i+batch_size]
@@ -88,9 +89,10 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
                 m_hat = m / (1 - beta1 ** (epoch + 1))
                 v_hat = v / (1 - beta2 ** (epoch + 1))
                 param -= learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
+            epoch_loss += loss
 
         # Update learning rate with scheduler
-        if lr_scheduler and epoch != 0:
+        if lr_scheduler and epoch % step_size == 0 and epoch != 0:
             learning_rate *= gamma
             print(learning_rate)
         # Compute training accuracy at the end of the epoch
@@ -105,7 +107,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
         y_train_classes = np.argmax(y_train, axis=1)
         accuracy_train = np.mean(predictions_train == y_train_classes)
 
-        loss_history.append(loss)
+        loss_history.append(epoch_loss / (X_train.shape[0] // batch_size))  # Średnia strata w epoce
         accuracy_history.append(accuracy_train)
 
     # Forward pass on the test set
