@@ -84,6 +84,7 @@ from sklearn.preprocessing import LabelEncoder
 def load_keras_iris_dataset():
     iris = load_iris()
 
+    print(iris.DESCR)
     X = iris.data
     y = iris.target
 

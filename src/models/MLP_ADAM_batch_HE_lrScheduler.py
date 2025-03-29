@@ -94,7 +94,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
         # Update learning rate with scheduler
         if lr_scheduler and epoch % step_size == 0 and epoch != 0:
             learning_rate *= gamma
-            print(learning_rate)
+            #print(learning_rate)
         # Compute training accuracy at the end of the epoch
         Z1_train = np.dot(X_train, W1) + b1
         A1_train = relu(Z1_train)
