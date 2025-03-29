@@ -1,6 +1,6 @@
 import numpy as np
 
-def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batch_size=32, lr_scheduler=True, step_size=10, gamma=0.98):
+def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batch_size=32, lr_scheduler=True, step_size=10, gamma=0.95):
     def relu(x):
         return np.maximum(0, x)
 

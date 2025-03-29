@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.data.dataset import X_train, y_train, X_test, y_test, X, y
+from src.data.dataset import load_dataset, load_keras_iris_dataset
 
 from src.models.MLP_base import train as train_MLP_base
 from src.models.MLP_L2 import train as train_MLP_L2
@@ -17,6 +17,7 @@ from src.visualization.explore_data import analyze_data
 from src.visualization.analyze_training_results import analyze_training_results
 import numpy as np
 def main():
+    X_train, X_test, y_train, y_test, X, y = load_keras_iris_dataset()
     #analyze_data(X, y)
     results = {}
 

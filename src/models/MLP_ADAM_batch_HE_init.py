@@ -89,6 +89,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
                 m_hat = m / (1 - beta1 ** (epoch + 1))
                 v_hat = v / (1 - beta2 ** (epoch + 1))
                 param -= learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
+            epoch_loss += loss
 
         # Compute training accuracy at the end of the epoch
         Z1_train = np.dot(X_train, W1) + b1
