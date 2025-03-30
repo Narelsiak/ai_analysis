@@ -8,10 +8,6 @@ def relu_derivative(x):
     """Derivative of ReLU activation function."""
     return np.where(x > 0, 1, 0)
 
-def leaky_relu(x, alpha=0.01):
-    """Leaky ReLU activation function."""
-    return np.where(x > 0, x, alpha * x)
-
 def sigmoid(x):
     """Sigmoid activation function."""
     return 1 / (1 + np.exp(-x))
