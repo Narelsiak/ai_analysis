@@ -17,6 +17,14 @@ class MLP:
             dA = layer.backward(dA, learning_rate)
         return dA
     
+    def fit(self, X_train, y_train, epochs=100, learning_rate=0.01, optimizer=None):
+        # batch_size = 32
+        for epoch in range(epochs):
+            output = self.forward(X_train)
+
+            #loss = 
+            pass
+
     def summary(self):
         print("Network Summary:")
         print("=" * 40)

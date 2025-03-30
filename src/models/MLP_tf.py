@@ -10,6 +10,8 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+    model.summary()
     
     history = model.fit(X_train, y_train, epochs=epochs, verbose=0, validation_data=(X_test, y_test))
     
