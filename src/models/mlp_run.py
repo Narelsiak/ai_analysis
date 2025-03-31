@@ -1,13 +1,15 @@
 from mlp.mlp import MLP
 from mlp.layers import Dense
 from mlp.optimizers import Adam
+from mlp.lr_schedules import ExponentialDecay, StepDecay
 
-adam_optimizer = Adam(learning_rate=0.001)
+lr_schedule = ExponentialDecay(initial_lr=0.001, decay_rate=0.01)
+adam_optimizer = Adam(learning_rate=0.001, schedule=lr_schedule)
 model = MLP([
     Dense(neurons=10, input_size=4, activation='relu'),
     Dense(neurons=8, activation='relu'),
     Dense(neurons=3, activation='softmax')
-],optimizer=adam_optimizer)
+], optimizer=adam_optimizer)
 
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
@@ -32,4 +34,4 @@ model.summary()
 X_train, X_test, y_train, y_test, _, _ = load_keras_iris_dataset()
 model.fit(X_train, y_train, epochs=230)
 predict, acc = model.predict(X_test, y_test)
-print("Accuracy: ", acc)
+print("Accuracy: ", acc) 

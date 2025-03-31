@@ -43,10 +43,6 @@ class Dense:
 
         dX = np.dot(dz, self.weights.T)
 
-        if self.optimizer:
-            self.optimizer.update(self)
-        #print(dW, db)
-        # self.weights -= learning_rate * dW
-        # self.biases -= learning_rate * db
+        self.optimizer.update(self)
 
         return dX

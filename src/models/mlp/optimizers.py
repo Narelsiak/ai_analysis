@@ -1,11 +1,16 @@
 import numpy as np
 class Optimizer:
-    def __init__(self, learning_rate=0.01):
+    def __init__(self, learning_rate=0.01, schedule=None):
         self.learning_rate = learning_rate
+        self.schedule = schedule
 
     def update(self, layer):
         raise NotImplementedError("This method should be overridden by subclasses")
     
+    def update_lr(self, epoch):
+        if self.schedule:
+            self.learning_rate = self.schedule.get_lr(epoch)
+
 class SGD(Optimizer):
     def __init__(self, learning_rate=0.01):
         super().__init__(learning_rate)
@@ -15,7 +20,7 @@ class SGD(Optimizer):
         layer.biases -= self.learning_rate * layer.db
 
 class Adam(Optimizer):
-    def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+    def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, schedule=None):
         super().__init__(learning_rate)
         self.beta1 = beta1
         self.beta2 = beta2

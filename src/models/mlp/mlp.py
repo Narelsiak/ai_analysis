@@ -1,10 +1,12 @@
 import numpy as np
+from .optimizers import SGD
+
 class MLP:
-    def __init__(self, layers, optimizer=None):
+    def __init__(self, layers, optimizer=SGD()):
         self.layers = layers
         self.optimizer = optimizer
 
-        for i in range(1, len(self.layers)):
+        for i in range(0, len(self.layers)):
             if self.layers[i].input_size is None:
                 self.layers[i].input_size = self.layers[i - 1].output_size
                 self.layers[i]._init_weights()
@@ -26,6 +28,8 @@ class MLP:
         n_samples = X_train.shape[0]
 
         for epoch in range(epochs):
+            self.optimizer.update_lr(epoch)
+
             indices = np.random.permutation(n_samples)
             X_train, y_train = X_train[indices], y_train[indices]
 
@@ -36,7 +40,7 @@ class MLP:
 
                 output = self.forward(X_batch)
                 
-                loss = -np.sum(y_batch * np.log(output + 1e-8)) / len(y_batch)
+                loss = -np.sum(y_batch * np.log(output + 1e-8)) / y_batch.shape[0]
 
                 dA = output - y_batch
 
