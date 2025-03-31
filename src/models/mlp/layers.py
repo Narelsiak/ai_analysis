@@ -10,33 +10,43 @@ activations = {
 }
 
 class Dense:
-    def __init__(self, neurons, input_size=None, activation='relu'):
+    def __init__(self, neurons, input_size=None, activation='relu', optimizer=None):
         self.input_size = input_size
         self.output_size = neurons
         self.activation, self.activation_derivative = activations[activation]    
+        self.optimizer = optimizer
 
-        # self.weights = np.random.randn(input_size, output_size) * np.sqrt(2 / input_size)
-        # self.biases = np.zeros((1, output_size))
+        if input_size is not None:
+            self._init_weights()
 
     def _init_weights(self):
         self.weights = np.random.randn(self.input_size, self.output_size) * np.sqrt(2 / self.input_size)
         self.biases = np.zeros((1, self.output_size))
-        
+
     def forward(self, X):
         self.input = X
         self.z = np.dot(X, self.weights) + self.biases
+        
         self.output = self.activation(self.z)
+
         return self.output
     
-    def backward(self, dA, learning_rate):
-        dz = dA * self.activation_derivative(self.z)
+    def backward(self, dA):
+        if self.activation.__name__ != 'softmax':
+            dz = dA * self.activation_derivative(self.z)
+        else:
+            dz = dA
 
-        dW = np.dot(self.input.T, dz)
-        db = np.sum(dz, axis=0, keepdims=True)
+        self.dW = np.dot(self.input.T, dz)
+        self.db = np.sum(dz, axis=0, keepdims=True)
+        dX = np.dot(dz, self.weights.T)
 
         dX = np.dot(dz, self.weights.T)
 
-        self.weights -= learning_rate * dW
-        self.biases -= learning_rate * db
+        if self.optimizer:
+            self.optimizer.update(self)
+        #print(dW, db)
+        # self.weights -= learning_rate * dW
+        # self.biases -= learning_rate * db
 
         return dX

@@ -26,10 +26,10 @@ def tanh_derivative(x):
 
 def softmax(x):
     """Softmax activation function."""
-    e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum(axis=0)
+    e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
+    return e_x / np.sum(e_x, axis=1, keepdims=True)
 
-def softmax_derivative(x):  
+def softmax_derivative(x):
     """Derivative of Softmax activation function."""
     s = softmax(x)
     return np.diag(s) - np.outer(s, s)

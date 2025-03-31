@@ -48,6 +48,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
         np.random.shuffle(indices)
         X_train, y_train = X_train[indices], y_train[indices]
 
+        epoch_loss = 0
         for i in range(0, X_train.shape[0], batch_size):
             X_batch = X_train[i:i+batch_size]
             y_batch = y_train[i:i+batch_size]
@@ -86,6 +87,8 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
                 m_hat = m / (1 - beta1 ** (epoch + 1))
                 v_hat = v / (1 - beta2 ** (epoch + 1))
                 param -= learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
+            epoch_loss += loss
+
 
         # Compute training accuracy at the end of the epoch
         Z1_train = np.dot(X_train, W1) + b1
@@ -99,7 +102,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
         y_train_classes = np.argmax(y_train, axis=1)
         accuracy_train = np.mean(predictions_train == y_train_classes)
 
-        loss_history.append(loss)
+        loss_history.append(epoch_loss / (X_train.shape[0] // batch_size))
         accuracy_history.append(accuracy_train)
 
     # Forward pass on the test set

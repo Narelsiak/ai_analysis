@@ -107,7 +107,7 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01, batc
         y_train_classes = np.argmax(y_train, axis=1)
         accuracy_train = np.mean(predictions_train == y_train_classes)
 
-        loss_history.append(epoch_loss / (X_train.shape[0] // batch_size))  # Średnia strata w epoce
+        loss_history.append(epoch_loss / (X_train.shape[0] // batch_size))
         accuracy_history.append(accuracy_train)
 
     # Forward pass on the test set
