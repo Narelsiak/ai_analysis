@@ -3,6 +3,8 @@ from .optimizers import SGD
 
 class MLP:
     def __init__(self, layers, optimizer=SGD()):
+        self.history = {'loss': [], 'accuracy': [], 'val_loss': [], 'val_accuracy': []}
+
         self.layers = layers
         self.optimizer = optimizer
 
@@ -24,7 +26,7 @@ class MLP:
             dA = layer.backward(dA)
         return dA
     
-    def fit(self, X_train, y_train, epochs=100, batch_size=32):
+    def fit(self, X_train, y_train, epochs=100, batch_size=32, validation=(), log_level=1):
         n_samples = X_train.shape[0]
 
         for epoch in range(epochs):
@@ -50,8 +52,22 @@ class MLP:
 
             loss = epoch_loss / (X_train.shape[0] // batch_size)
             accuracy = np.mean(np.argmax(output, axis=1) == np.argmax(y_batch, axis=1))
-            print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}, Accuracy: {accuracy:.4f}")
 
+            if len(validation) == 2:
+                output = self.forward(validation[0])
+                val_loss = -np.sum(validation[1] * np.log(output + 1e-8)) / validation[1].shape[0]
+                val_acc = np.mean(np.argmax(output, axis=1) == np.argmax(validation[1], axis=1))
+                
+                self.history['loss'].append(loss)
+                self.history['accuracy'].append(accuracy)
+                self.history['val_loss'].append(val_loss)
+                self.history['val_accuracy'].append(val_acc)
+                print(f"Validation loss: {val_loss:.4f}, Validation accuracy: {val_acc:.4f}")
+
+            if log_level > 0:
+                print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}, Accuracy: {accuracy:.4f}")
+        return self.history
+    
     def predict(self, X, y):
         output = self.forward(X)
         predictions = np.argmax(output, axis=1)

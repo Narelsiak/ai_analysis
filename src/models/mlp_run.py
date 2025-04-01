@@ -32,6 +32,6 @@ def load_keras_iris_dataset():
 
 model.summary()
 X_train, X_test, y_train, y_test, _, _ = load_keras_iris_dataset()
-model.fit(X_train, y_train, epochs=230)
+model.fit(X_train, y_train, epochs=230, validation=(X_test, y_test), log_level=1)
 predict, acc = model.predict(X_test, y_test)
 print("Accuracy: ", acc) 

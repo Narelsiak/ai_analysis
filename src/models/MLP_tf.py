@@ -14,7 +14,8 @@ def train(X_train, y_train, X_test, y_test, epochs=230, learning_rate=0.01):
     model.summary()
     
     history = model.fit(X_train, y_train, epochs=epochs, verbose=0, validation_data=(X_test, y_test))
-    
+    print(history.history)
+
     loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
     
     predictions = np.argmax(model.predict(X_test), axis=1)
