@@ -9,12 +9,20 @@ class MLP:
         self.optimizer = optimizer
 
         for i in range(0, len(self.layers)):
-            if self.layers[i].input_size is None:
-                self.layers[i].input_size = self.layers[i - 1].output_size
-                self.layers[i]._init_weights()
 
-            if self.optimizer:
-                self.layers[i].optimizer = self.optimizer
+            last_output_size = None
+            for j in range(i -1, -1, -1):
+                if hasattr(self.layers[j], 'output_size'):
+                    last_output_size = self.layers[j].output_size
+                    break
+
+            if(hasattr(self.layers[i], 'input_size')):
+                if self.layers[i].input_size is None:
+                    self.layers[i].input_size = last_output_size
+                    self.layers[i]._init_weights()
+
+                if self.optimizer:
+                    self.layers[i].optimizer = self.optimizer
     
     def forward(self, X):
         for layer in self.layers:
@@ -79,9 +87,26 @@ class MLP:
     def summary(self):
         print("Network Summary:")
         print("=" * 40)
-        print(f"{'Layer':<10}{'Input':<10}{'Output':<10}{'Activation':<10}")
+        print(f"{'Layer':<10}{'Name':<15}{'Input':<10}{'Output':<10}{'Activation':<10}")
         print("-" * 40)
         for i, layer in enumerate(self.layers):
-            activation_name = layer.activation.__name__ if callable(layer.activation) else layer.activation
-            print(f"{i+1:<10}{layer.input_size:<10}{layer.output_size:<10}{activation_name:<10}")
+            # Sprawdzamy, czy warstwa ma atrybut 'input_size'
+            if hasattr(layer, 'input_size'):
+                input_size = layer.input_size
+            else:
+                input_size = "N/A"  # Jeśli warstwa nie ma input_size (np. BatchNormalization)
+            
+            # Sprawdzamy, czy warstwa ma atrybut 'activation'
+            if hasattr(layer, 'activation'):
+                activation_name = layer.activation.__name__ if callable(layer.activation) else layer.activation
+            else:
+                activation_name = "None"  # Dla warstw, które nie mają aktywacji (np. BatchNormalization)
+
+            # Sprawdzamy, czy warstwa ma atrybut 'output_size'
+            if hasattr(layer, 'output_size'):
+                output_size = layer.output_size
+            else:
+                output_size = "N/A"  # Jeśli warstwa nie ma output_size (np. BatchNormalization)
+
+            print(f"{i+1:<10}{layer._name:<15}{input_size:<10}{output_size:<10}{activation_name:<10}")
         print("=" * 40)

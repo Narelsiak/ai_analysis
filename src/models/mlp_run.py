@@ -1,5 +1,5 @@
 from mlp.mlp import MLP
-from mlp.layers import Dense
+from mlp.layers import Dense, BatchNormalization
 from mlp.optimizers import Adam
 from mlp.lr_schedules import ExponentialDecay, StepDecay
 

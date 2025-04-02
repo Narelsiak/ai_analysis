@@ -3,6 +3,7 @@ class Optimizer:
     def __init__(self, learning_rate, schedule=None):
         self.learning_rate = learning_rate
         self.schedule = schedule
+        self.iterations = 0
 
     def update(self, layer):
         raise NotImplementedError("This method should be overridden by subclasses")
@@ -10,6 +11,9 @@ class Optimizer:
     def update_lr(self, epoch):
         if self.schedule:
             self.learning_rate = self.schedule.get_lr(epoch)
+    
+    def step(self):
+        self.iterations += 1
 
 class SGD(Optimizer):
     def __init__(self, learning_rate=0.01):
@@ -25,7 +29,6 @@ class Adam(Optimizer):
         self.beta1 = beta1
         self.beta2 = beta2
         self.epsilon = epsilon
-        self.t = 0
 
     def update(self, layer):
         if not hasattr(layer, 'm'):
@@ -34,17 +37,17 @@ class Adam(Optimizer):
             layer.m_b = np.zeros_like(layer.biases)
             layer.v_b = np.zeros_like(layer.biases)
 
-        self.t += 1
+        self.step()
 
         layer.m = self.beta1 * layer.m + (1 - self.beta1) * layer.dW
         layer.v = self.beta2 * layer.v + (1 - self.beta2) * (layer.dW ** 2)
         layer.m_b = self.beta1 * layer.m_b + (1 - self.beta1) * layer.db
         layer.v_b = self.beta2 * layer.v_b + (1 - self.beta2) * (layer.db ** 2)
 
-        m_hat = layer.m / (1 - self.beta1 ** self.t)
-        v_hat = layer.v / (1 - self.beta2 ** self.t)
-        m_hat_b = layer.m_b / (1 - self.beta1 ** self.t)
-        v_hat_b = layer.v_b / (1 - self.beta2 ** self.t)
+        m_hat = layer.m / (1 - self.beta1 ** self.iterations)
+        v_hat = layer.v / (1 - self.beta2 ** self.iterations)
+        m_hat_b = layer.m_b / (1 - self.beta1 ** self.iterations)
+        v_hat_b = layer.v_b / (1 - self.beta2 ** self.iterations)
 
         layer.weights -= self.learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)
         layer.biases -= self.learning_rate * m_hat_b / (np.sqrt(v_hat_b) + self.epsilon)
