@@ -1,6 +1,6 @@
 import numpy as np
 class Optimizer:
-    def __init__(self, learning_rate=0.01, schedule=None):
+    def __init__(self, learning_rate, schedule=None):
         self.learning_rate = learning_rate
         self.schedule = schedule
 
@@ -21,7 +21,7 @@ class SGD(Optimizer):
 
 class Adam(Optimizer):
     def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, schedule=None):
-        super().__init__(learning_rate)
+        super().__init__(learning_rate, schedule)
         self.beta1 = beta1
         self.beta2 = beta2
         self.epsilon = epsilon
