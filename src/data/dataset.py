@@ -60,27 +60,42 @@ def load_dataset():
         
         return X_train, X_test, y_train, y_test
 
-    def data_normalization(X):
+    def data_normalization_min_max(X_train, X_test):
         """Normalizes the dataset using Min-Max scaling."""
-        return (X - X.min()) / (X.max() - X.min())
+        min_train = X_train.min(axis=0)
+        max_train = X_train.max(axis=0)
+
+        X_train_normalized = (X_train - min_train) / (max_train - min_train)
+        X_test_normalized = (X_test - min_train) / (max_train - min_train)
+
+        return X_train_normalized, X_test_normalized
+
+    def data_normalization_scaler(X_train, X_test):
+        """Normalizes the dataset using StandardScaler (mean and std normalization)."""
+        mean_train = np.mean(X_train, axis=0)
+        std_train = np.std(X_train, axis=0)
+        
+        X_train_normalized = (X_train - mean_train) / std_train
+        X_test_normalized = (X_test - mean_train) / std_train
+        
+        return X_train_normalized, X_test_normalized
 
     def load_and_preprocess_data(file_path, test_size=0.2):
         """Loads and preprocesses data, returning train and test sets."""
         X, y = load_data(file_path)
-        X = data_normalization(X)
+        X = data_normalization_min_max(X)
         return split_dataset(X, y, test_size)
 
     file_path = os.path.join('data', 'raw', 'Iris.csv')
     X, y = load_data(file_path)
-    X_normalize = data_normalization(X)
 
-    X_train, X_test, y_train, y_test = split_dataset(X_normalize, y, test_size=0.2, stratify=True)
+    X_train, X_test, y_train, y_test = split_dataset(X, y, test_size=0.2, stratify=True)
+    X_train, X_test = data_normalization_min_max(X_train, X_test)
     return X_train, X_test, y_train, y_test, X, y
 
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 def load_keras_iris_dataset():
     iris = load_iris()
 
@@ -93,5 +108,9 @@ def load_keras_iris_dataset():
     y_one_hot = np.eye(len(np.unique(y)))[y_encoded]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y_one_hot, test_size=0.2, stratify=y_one_hot)
+
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
     return X_train, X_test, y_train, y_test, X, y_one_hot

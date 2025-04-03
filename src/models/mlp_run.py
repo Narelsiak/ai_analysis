@@ -1,19 +1,19 @@
 from mlp.mlp import MLP
-from mlp.layers import Dense, BatchNormalization
+from mlp.layers import Dense, Dropout
 from mlp.optimizers import Adam
 from mlp.lr_schedules import ExponentialDecay, StepDecay
 
-lr_schedule = ExponentialDecay(initial_lr=0.01, decay_rate=0.01)
+lr_schedule = ExponentialDecay(initial_lr=0.005, decay_rate=0.01)
 adam_optimizer = Adam(schedule=lr_schedule)
 model = MLP([
-    Dense(neurons=10, input_size=4, activation='relu'),
-    Dense(neurons=8, activation='relu'),
+    Dense(neurons=4, input_size=4, activation='relu'),
+    Dense(neurons=4, activation='relu'),
     Dense(neurons=3, activation='softmax')
 ], optimizer=adam_optimizer)
 
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 import numpy as np
 
 def load_keras_iris_dataset():
@@ -28,6 +28,10 @@ def load_keras_iris_dataset():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y_one_hot, test_size=0.2, stratify=y_one_hot)
 
+    # scaler = StandardScaler()
+    # X_train = scaler.fit_transform(X_train)
+    # X_test = scaler.transform(X_test)
+    
     return X_train, X_test, y_train, y_test, X, y_one_hot
 
 model.summary()
@@ -64,7 +68,3 @@ def plot_history(history, save_path="training_history.png"):
     print(f"Plot saved as {save_path}")
 
 plot_history(history)
-
-
-#TODO -> sprawdzenie tego val_lossa wzgledem lossa, jest mniejszy. Sprawdzenie jak wygladaja te roznice ok?
-### patrzac niby po tf, to tak ma byc? Ale no, trzeba sprawdzic. W teorii loss -> dazymy do najmniejszego, val_loss -> moze poskakac, praktyka odwrotnie.

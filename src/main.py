@@ -17,7 +17,7 @@ from src.visualization.explore_data import analyze_data
 from src.visualization.analyze_training_results import analyze_training_results
 import numpy as np
 def main():
-    X_train, X_test, y_train, y_test, X, y = load_keras_iris_dataset()
+    X_train, X_test, y_train, y_test, X, y = load_dataset()
     #analyze_data(X, y)
     results = {}
 

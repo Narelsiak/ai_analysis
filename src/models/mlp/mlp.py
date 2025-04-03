@@ -1,6 +1,6 @@
 import numpy as np
 from .optimizers import SGD
-
+from .layers import Dense
 class MLP:
     def __init__(self, layers, optimizer=SGD()):
         self.history = {'loss': [], 'accuracy': [], 'val_loss': [], 'val_accuracy': []}
@@ -12,11 +12,11 @@ class MLP:
 
             last_output_size = None
             for j in range(i -1, -1, -1):
-                if hasattr(self.layers[j], 'output_size'):
+                if isinstance(self.layers[j], Dense):
                     last_output_size = self.layers[j].output_size
                     break
 
-            if(hasattr(self.layers[i], 'input_size')):
+            if isinstance(self.layers[i], Dense):
                 if self.layers[i].input_size is None:
                     self.layers[i].input_size = last_output_size
                     self.layers[i]._init_weights()
@@ -24,9 +24,9 @@ class MLP:
                 if self.optimizer:
                     self.layers[i].optimizer = self.optimizer
     
-    def forward(self, X):
+    def forward(self, X, training=False):
         for layer in self.layers:
-            X = layer.forward(X)
+            X = layer.forward(X, training)
         return X 
     
     def backward(self, dA):
@@ -48,7 +48,7 @@ class MLP:
                 X_batch = X_train[i:i+batch_size]
                 y_batch = y_train[i:i+batch_size]
 
-                output = self.forward(X_batch)
+                output = self.forward(X_batch, training=True)
                 
                 loss = -np.sum(y_batch * np.log(output + 1e-8)) / y_batch.shape[0]
 
@@ -58,8 +58,9 @@ class MLP:
                 
                 epoch_loss += loss
 
+            output = self.forward(X_train)
             loss = epoch_loss / (X_train.shape[0] // batch_size)
-            accuracy = np.mean(np.argmax(output, axis=1) == np.argmax(y_batch, axis=1))
+            accuracy = np.mean(np.argmax(output, axis=1) == np.argmax(y_train, axis=1))
 
             if len(validation) == 2:
                 output = self.forward(validation[0])
@@ -87,26 +88,23 @@ class MLP:
     def summary(self):
         print("Network Summary:")
         print("=" * 40)
-        print(f"{'Layer':<10}{'Name':<15}{'Input':<10}{'Output':<10}{'Activation':<10}")
+        print(f"{'Layer':<10}{'Input':<10}{'Output':<10}{'Activation':<10}")
         print("-" * 40)
         for i, layer in enumerate(self.layers):
-            # Sprawdzamy, czy warstwa ma atrybut 'input_size'
             if hasattr(layer, 'input_size'):
                 input_size = layer.input_size
             else:
-                input_size = "N/A"  # Jeśli warstwa nie ma input_size (np. BatchNormalization)
+                input_size = "N/A"
             
-            # Sprawdzamy, czy warstwa ma atrybut 'activation'
             if hasattr(layer, 'activation'):
                 activation_name = layer.activation.__name__ if callable(layer.activation) else layer.activation
             else:
-                activation_name = "None"  # Dla warstw, które nie mają aktywacji (np. BatchNormalization)
+                activation_name = "None"
 
-            # Sprawdzamy, czy warstwa ma atrybut 'output_size'
             if hasattr(layer, 'output_size'):
                 output_size = layer.output_size
             else:
-                output_size = "N/A"  # Jeśli warstwa nie ma output_size (np. BatchNormalization)
+                output_size = "N/A"
 
-            print(f"{i+1:<10}{layer._name:<15}{input_size:<10}{output_size:<10}{activation_name:<10}")
+            print(f"{i+1:<10}{input_size:<10}{output_size:<10}{activation_name:<10}")
         print("=" * 40)

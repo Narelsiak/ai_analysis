@@ -30,7 +30,7 @@ class Dense:
             self.weights = np.random.randn(self.input_size, self.output_size) * 0.01
         self.biases = np.zeros((1, self.output_size))
 
-    def forward(self, X):
+    def forward(self, X, training=False):
         self.input = X
         self.z = np.dot(X, self.weights) + self.biases
         
@@ -53,25 +53,18 @@ class Dense:
 
         return dX
 
-class BatchNormalization:
-    def __init__(self, momentum=0.9, epsilon=1e-5):
-        self._name = "BatchNorm"
-        self.momentum = momentum
-        self.epsilon = epsilon
-        self.running_mean = None
-        self.running_var = None
+class Dropout:
+    def __init__(self, rate=0.3):
+        self._name = "Dropout"
+        self.rate = rate
+        self.mask = None
 
-    def forward(self, X):
-        if self.running_mean is None:
-            self.running_mean = np.mean(X, axis=0)
-            self.running_var = np.var(X, axis=0)
-        
-        self.batch_mean = np.mean(X, axis=0)
-        self.batch_var = np.var(X, axis=0)
-    
-        self.X_norm = (X - self.batch_mean) / np.sqrt(self.batch_var + self.epsilon)
-        
-        return self.X_norm
-    
+    def forward(self, X, training=False):
+        if training:
+            self.mask = (np.random.rand(*X.shape) > self.rate) / (1.0 - self.rate)
+            return X * self.mask
+        else:
+            return X
+
     def backward(self, dA):
-        return dA
+        return dA * self.mask
