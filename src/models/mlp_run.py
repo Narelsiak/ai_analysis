@@ -2,12 +2,13 @@ from mlp.mlp import MLP
 from mlp.layers import Dense, Dropout
 from mlp.optimizers import Adam
 from mlp.lr_schedules import ExponentialDecay, StepDecay
+from mlp.scalers import MeanStdScaler
 
 lr_schedule = ExponentialDecay(initial_lr=0.005, decay_rate=0.01)
 adam_optimizer = Adam(schedule=lr_schedule)
 model = MLP([
-    Dense(neurons=4, input_size=4, activation='relu'),
-    Dense(neurons=4, activation='relu'),
+    Dense(neurons=10, input_size=4, activation='relu'),
+    Dense(neurons=8, activation='relu'),
     Dense(neurons=3, activation='softmax')
 ], optimizer=adam_optimizer)
 
@@ -31,7 +32,8 @@ def load_keras_iris_dataset():
     # scaler = StandardScaler()
     # X_train = scaler.fit_transform(X_train)
     # X_test = scaler.transform(X_test)
-    
+    scaler = MeanStdScaler()
+    X_train, X_test = scaler.fit_transform(X_train, X_test)
     return X_train, X_test, y_train, y_test, X, y_one_hot
 
 model.summary()
@@ -64,7 +66,7 @@ def plot_history(history, save_path="training_history.png"):
     plt.title('Accuracy over Epochs')
 
     plt.tight_layout()
-    plt.savefig(save_path)  # Zapisz wykres jako plik
+    plt.savefig(save_path)
     print(f"Plot saved as {save_path}")
 
 plot_history(history)

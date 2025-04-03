@@ -90,7 +90,7 @@ def load_dataset():
     X, y = load_data(file_path)
 
     X_train, X_test, y_train, y_test = split_dataset(X, y, test_size=0.2, stratify=True)
-    X_train, X_test = data_normalization_min_max(X_train, X_test)
+    X_train, X_test = data_normalization_scaler(X_train, X_test)
     return X_train, X_test, y_train, y_test, X, y
 
 from sklearn.datasets import load_iris
